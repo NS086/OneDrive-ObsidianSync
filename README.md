@@ -2,7 +2,7 @@
 
 A personal-use Obsidian plugin that bidirectionally syncs your vault to Microsoft OneDrive via the Microsoft Graph API. Works on desktop and iOS.
 
-> **Note:** I built this for my own use. It is not published to the Obsidian community plugin registry and comes with no warranty or official support. You are welcome to use and adapt the code freely under the MIT licence.
+> **Note:** I built this for my own use. It is not published to the Obsidian community plugin registry and comes with no warranty or official support. You are welcome to use and adapt the code freely — no conditions, no attribution required.
 
 ---
 

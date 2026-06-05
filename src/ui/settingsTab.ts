@@ -67,6 +67,7 @@ export class OneDriveSyncSettingsTab extends PluginSettingTab {
       .addDropdown((drop) =>
         drop
           .addOption("0", "Manual only")
+          .addOption("1", "Every 1 minute")
           .addOption("5", "Every 5 minutes")
           .addOption("15", "Every 15 minutes")
           .addOption("30", "Every 30 minutes")

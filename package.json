@@ -1,0 +1,21 @@
+{
+  "name": "obsidian-onedrive-sync",
+  "version": "1.0.0",
+  "description": "Bidirectional sync to Microsoft OneDrive (personal or business)",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "node esbuild.config.mjs production",
+    "lint": "eslint src/**/*.ts"
+  },
+  "keywords": [],
+  "author": "Nabil",
+  "license": "Unlicense",
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "builtin-modules": "^3.3.0",
+    "esbuild": "^0.21.0",
+    "obsidian": "latest",
+    "typescript": "^5.4.0"
+  }
+}

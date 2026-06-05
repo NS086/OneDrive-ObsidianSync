@@ -115,13 +115,21 @@ export class OneDriveSyncSettingsTab extends PluginSettingTab {
               new Notice("Please enter a Client ID first.");
               return;
             }
+            // Open the window synchronously inside the gesture handler — iOS blocks
+            // window.open() called after an await
+            const win = window.open("", "_blank");
             const verifier = generateCodeVerifier();
             const challenge = await generateCodeChallenge(verifier);
             const state = generateState();
             this.plugin.pendingVerifier = verifier;
             this.plugin.pendingState = state;
             const url = buildAuthUrl(this.plugin.settings, challenge, state);
-            window.open(url);
+            if (win) {
+              win.location.href = url;
+            } else {
+              // Fallback: direct navigation (some iOS configurations)
+              window.location.href = url;
+            }
             new Notice("Complete sign-in in your browser. You'll be redirected back automatically.");
           })
         );

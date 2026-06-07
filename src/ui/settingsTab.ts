@@ -81,6 +81,22 @@ export class OneDriveSyncSettingsTab extends PluginSettingTab {
           })
       );
 
+    new Setting(containerEl)
+      .setName("Reset sync state")
+      .setDesc("Clears the sync history and forces a full re-enumeration on the next sync. Use this if files are missing from OneDrive or the sync seems stuck.")
+      .addButton((btn) =>
+        btn
+          .setButtonText("Reset")
+          .setWarning()
+          .onClick(async () => {
+            this.plugin.settings.deltaLink = "";
+            this.plugin.settings.fileIndex = {};
+            this.plugin.settings.lastSyncTime = 0;
+            await this.plugin.saveData(this.plugin.settings);
+            new Notice("Sync state reset. Run a manual sync to re-upload everything.");
+          })
+      );
+
     // ── Account ───────────────────────────────────────────────────────
     containerEl.createEl("h3", { text: "Account" });
 

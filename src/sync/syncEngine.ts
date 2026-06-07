@@ -83,12 +83,14 @@ export class SyncEngine {
 
     // ── Phase 1: Remote delta ─────────────────────────────────────────
     let deltaResult;
+    let isFullDelta = !savedDeltaLink;
     try {
       deltaResult = await this.driveApi.delta(syncFolder, savedDeltaLink || undefined);
     } catch (err) {
       // 410 Gone: delta token expired — full re-enumeration
       if (err instanceof Error && err.message.includes("410")) {
         deltaResult = await this.driveApi.delta(syncFolder);
+        isFullDelta = true;
       } else {
         throw err;
       }
@@ -99,6 +101,8 @@ export class SyncEngine {
     // ── Phase 2: Collect local changes ────────────────────────────────
     const vaultFiles = this.vault.getFiles();
     const vaultPaths = new Set(vaultFiles.map((f) => f.path));
+    // Snapshot the persisted index paths before Phase 3 modifies the index
+    const persistedPaths = new Set(index.allPaths());
 
     const localModified: string[] = [];
     const localNew: string[] = [];
@@ -164,6 +168,20 @@ export class SyncEngine {
       // else: local-only change — handled in upload phase
     }
 
+    // ── Phase 3b: Stale index detection (full delta only) ────────────
+    // On a full enumeration, remoteModifiedPaths contains every file on OneDrive.
+    // Any file in our persisted index that isn't there has vanished from OneDrive
+    // without us knowing — clear the stale entry and queue it for re-upload.
+    const toReupload: string[] = [];
+    if (isFullDelta) {
+      for (const path of persistedPaths) {
+        if (!remoteModifiedPaths.has(path) && vaultPaths.has(path)) {
+          index.remove(path);
+          toReupload.push(path);
+        }
+      }
+    }
+
     // ── Phase 4: Conflict resolution ──────────────────────────────────
     const extraUploads: string[] = [];
     for (const { vaultPath, item } of conflicts) {
@@ -189,6 +207,7 @@ export class SyncEngine {
     const uploadPaths = [
       ...localModified.filter((p) => !remoteModifiedPaths.has(p)),
       ...localNew.filter((p) => !remoteModifiedPaths.has(p)),
+      ...toReupload,
       ...extraUploads,
     ];
 

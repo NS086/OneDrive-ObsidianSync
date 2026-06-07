@@ -1,7 +1,7 @@
 {
   "id": "onedrive-sync",
   "name": "OneDrive Sync",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "minAppVersion": "1.4.0",
   "description": "Bidirectional sync to Microsoft OneDrive (personal or business) via Microsoft Graph API.",
   "author": "Nabil",

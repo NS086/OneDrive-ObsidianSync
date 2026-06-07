@@ -101,11 +101,15 @@ export class SyncEngine {
     const vaultPaths = new Set(vaultFiles.map((f) => f.path));
 
     const localModified: string[] = [];
+    const localNew: string[] = [];
     const localDeleted: Array<{ path: string; remoteId: string }> = [];
 
     for (const file of vaultFiles) {
       if (file.stat.mtime > lastSyncTime) {
         localModified.push(file.path);
+      } else if (!index.hasPath(file.path)) {
+        // Exists locally but was never successfully synced
+        localNew.push(file.path);
       }
     }
 
@@ -184,6 +188,7 @@ export class SyncEngine {
     // ── Phase 6: Apply uploads ────────────────────────────────────────
     const uploadPaths = [
       ...localModified.filter((p) => !remoteModifiedPaths.has(p)),
+      ...localNew.filter((p) => !remoteModifiedPaths.has(p)),
       ...extraUploads,
     ];
 
